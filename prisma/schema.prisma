@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id          Int     @id @default(autoincrement())
+  phoneNumber String  @unique
+  email       String  @unique
+  personName  String?
+  artistName  String
+  genre       String?
+
+  createdAt DateTime @default(now())
+
+  points Decimal // for a discount/rewards system?
+
+  transactions Transaction[]
+}
+
+model Transaction {
+  transaction_id Int @id @default(autoincrement())
+  customer_id    Int
+
+  mixes Mix[]
+  files File[]
+
+  orderTotal Decimal  @default(0.00) @db.Decimal(10, 2)
+  createdAt  DateTime @default(now())
+
+  customer Customer @relation(fields: customer_id, references: [id])
+
+  confirmed    Boolean @default(false)
+  confirmation String?
+
+  order Order?
+}
+
+model Mix {
+  id             Int         @id @default(autoincrement())
+  songName       String
+  type           MixType
+  print          FileType
+  transaction    Transaction @relation(fields: [transaction_id], references: [transaction_id])
+  transaction_id Int
+}
+
+model File {
+  id       Int      @id @default(autoincrement())
+  songName String
+  print    FileType
+
+  transaction    Transaction @relation(fields: [transaction_id], references: [transaction_id])
+  transaction_id Int
+}
+
+enum MixType {
+  STEREO
+  TRACKOUT
+}
+
+enum FileType {
+  WAV
+  MP3
+}
+
+model Order {
+  id             Int         @id @default(autoincrement())
+  transaction_id Int         @unique
+  transaction    Transaction @relation(fields: transaction_id, references: [transaction_id])
+
+  satisfied Boolean @default(false)
+
+  createdAt DateTime @default(now())
+}
