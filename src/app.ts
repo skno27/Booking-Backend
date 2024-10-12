@@ -23,12 +23,18 @@ app.use(
   session({
     secret: "secret-key",
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: !true },
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      // secure: true when deploying to production, false for local development
+      secure: false,
+      maxAge: 1000 * 60 * 15, // 15 minutes
+      sameSite: "lax",
+    },
   })
 );
 const corsOptions = {
-  origin: "*",
+  origin: "http://localhost:3000",
   methods: "GET, POST, PATCH, DELETE",
   credentials: true,
   optionsSuccessStatus: 204,

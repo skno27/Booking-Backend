@@ -34,6 +34,7 @@ export const submitInfo: RequestHandler = async (req, res) => {
       customerId = newCustomer.id;
 
       req.session.customerId = customerId;
+      console.log(`New customer created with ID: ${req.session.customerId}`);
       return res
         .status(201)
         .json({ message: "Customer info submitted", customerId });
@@ -44,13 +45,14 @@ export const submitInfo: RequestHandler = async (req, res) => {
         where: { id: customer.id },
         data: {
           email: capEmail,
-          phoneNumber: cleanNumber,
+          // phoneNumber: cleanNumber,
           personName: capName,
           artistName,
           genre: customer.genre ? `${customer.genre}, ${genre}` : genre,
         },
       });
       req.session.customerId = customerId;
+      console.log(`Customer info updated with ID: ${req.session.customerId}`);
       return res
         .status(200)
         .json({ message: "Customer info updated", customerId });

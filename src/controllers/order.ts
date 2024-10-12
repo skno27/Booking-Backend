@@ -5,7 +5,10 @@ import { File, Mix, MixType, FileType } from "@prisma/client";
 // submit transaction details
 
 export const submitTransaction: RequestHandler = async (req, res) => {
+  console.log("Request session:", req.session);
   const customer = req.session.customerId;
+
+  console.log(customer);
 
   // Validate customer existance, this will also be useful in debugging
   if (!customer) {
